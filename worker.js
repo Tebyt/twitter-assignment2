@@ -26,15 +26,18 @@ function retriveFromQueue() {
     };
     sqs.receiveMessage(params, function (err, message) {
         if (err) console.log(err);
-        else console.log('Retrived from SQS');
-        if (typeof message.Messages != 'undefined') {
-            message.Messages.forEach(function (message) {
-                var tweet = JSON.parse(message.Body);
-                // addSentiment(tweet).then(function (tweet) {
+        else {
+            console.log(message);
+            console.log('Retrived from SQS');
+            if (typeof message.Messages != 'undefined') {
+                message.Messages.forEach(function (message) {
+                    var tweet = JSON.parse(message.Body);
+                    // addSentiment(tweet).then(function (tweet) {
                     publishTweet(tweet);
                     deleteMessage(message.ReceiptHandle);
-                // })
-            })
+                    // })
+                })
+            }
         }
         process.nextTick(retriveFromQueue);
     });
