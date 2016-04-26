@@ -13,8 +13,8 @@ function sendToQueue(tweet) {
         QueueUrl: queueURL
     }
     sqs.sendMessage(params, function (err, data) {
-        if (err) console.log(err);
-        else console.log("Sent to SQS");
+        console.log("Sending to SQS");
+        if (err) console.error(err, err.stack);
     });
 }
 
@@ -25,10 +25,9 @@ function retriveFromQueue() {
         WaitTimeSeconds: 20
     };
     sqs.receiveMessage(params, function (err, message) {
-        if (err) console.log(err);
+        console.log('Retriving from SQS');
+        if (err) console.error(err, err.stack);
         else {
-            console.log(message);
-            console.log('Retrived from SQS');
             if (typeof message.Messages != 'undefined') {
                 message.Messages.forEach(function (message) {
                     var tweet = JSON.parse(message.Body);
@@ -49,11 +48,11 @@ function deleteMessage(receiptHandle) {
         ReceiptHandle: receiptHandle
     };
     sqs.deleteMessage(params, function (err, data) {
-        if (err) console.log(err);
+        if (err) console.error(err, err.stack);
     });
 }
 
-retriveFromQueue();
+// retriveFromQueue();
 
 /*
 AWS SNS
@@ -67,7 +66,7 @@ function publishTweet(tweet) {
         TopicArn: topicURL
     };
     sns.publish(params, function (err, data) {
-        if (err) console.log(err);
+        if (err) console.error(err, err.stack);
         console.log("Published to SNS");
     });
 }
@@ -83,7 +82,7 @@ function addSentiment(tweet) {
     var promise = new Promise(function (resolve, reject) {
         alchemy.sentiment('TEXT', tweet.properties.text, function (err, response) {
             if (err) {
-                console.log(err);
+                if (err) console.log(err);
                 reject(err);
             } else if (response.status === 'ERROR') {
                 console.log(response);
