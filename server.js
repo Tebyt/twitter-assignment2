@@ -63,11 +63,12 @@ var overrideContentType = function (req, res, next) {
     if (req.headers['x-amz-sns-message-type']) {
         req.headers['content-type'] = 'application/json;charset=UTF-8';
     }
-    next();
+    // next();
 };
 app.use(overrideContentType);
 app.use(bodyParser.json());
 
 app.post('/api/tweets', function (req, res) {
+    // if ()
     console.log(req.body);
 })
