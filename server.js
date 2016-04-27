@@ -48,7 +48,8 @@ var express = require('express')
   , SNSClient = require('aws-snsclient');
  
 var client = SNSClient(function(err, message) {
-    console.log(message);
+    if (err) console.log(err);
+    else console.log(message);
 });
  
 app.post('/api/tweets', client);
@@ -56,3 +57,8 @@ app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), function () {
     console.log('Listening on port ' + app.get('port'))
 });
+
+
+app.post('/api/tweets', function(req, res) {
+    console.log(req.body);
+})
