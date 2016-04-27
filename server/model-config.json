@@ -14,34 +14,34 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "elasticsearch"
   },
   "AccessToken": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "Role": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "geometry": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "properties": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": false
   },
   "tweet": {
-    "dataSource": "db",
+    "dataSource": "elasticsearch",
     "public": true
   }
 }

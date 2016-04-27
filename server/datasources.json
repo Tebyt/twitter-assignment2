@@ -2,5 +2,23 @@
   "db": {
     "name": "db",
     "connector": "memory"
+  },
+   "elasticsearch": {
+    "connector": "es",
+    "name": "elasticsearch",
+    "index": "tweets",
+    "hosts": [
+      {
+        "protocol": "https",
+        "host": "tebyt.east-us.azr.facetflow.io",
+        "port": 443,
+        "auth": "RZZZ27aCw0TcbsUariwtQaG6vJY4Es0K:"
+      }
+    ],
+    "apiVersion": "1.0",
+    "log": "trace",
+    "defaultSize": 50,
+    "requestTimeout": 30000
   }
+  
 }
