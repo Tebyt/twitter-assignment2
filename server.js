@@ -61,7 +61,7 @@ app.listen(app.get('port'), function () {
 });
 
 
-app.post('/api/tweets', function(req, res) {
+app.post('/api/tweets', function(req, res, next) {
     if (req.headers['x-amz-sns-message-type']) {
         req.headers['content-type'] = 'application/json;charset=UTF-8';
     }
