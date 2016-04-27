@@ -31,10 +31,12 @@ function retriveFromQueue() {
             if (typeof message.Messages != 'undefined') {
                 message.Messages.forEach(function (message) {
                     var tweet = JSON.parse(message.Body);
-                    // addSentiment(tweet).then(function (tweet) {
-                    publishTweet(tweet);
-                    deleteMessage(message.ReceiptHandle);
-                    // })
+                    // console.log(message.MessageId);
+                    addSentiment(tweet).then(function (tweet) {
+                        publishTweet(tweet);
+                        // console.log(tweet);
+                        deleteMessage(message.ReceiptHandle);
+                    })
                 })
             }
         }
@@ -52,7 +54,7 @@ function deleteMessage(receiptHandle) {
     });
 }
 
-// retriveFromQueue();
+retriveFromQueue();
 
 /*
 AWS SNS
@@ -140,7 +142,6 @@ stream.on('tweet', function (tweet) {
     if (tweet == null) return;
     console.log("Validated")
     tweet = formatTweet(tweet);
-    // sendToDB(tweet);
     sendToQueue(tweet);
 })
 
