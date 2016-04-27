@@ -1,40 +1,21 @@
 {
-  "name": "twitter-api",
-  "version": "1.0.0",
-  "main": "server/server.js",
+  "name": "twitter-assignment2",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "node .",
-    "pretest": "jshint .",
-    "posttest": "nsp check"
+    "worker": "node ./worker.js",
+    "web": "node ./server.js"
   },
   "dependencies": {
     "alchemy-api": "^1.3.1",
     "aws-sdk": "^2.3.5",
     "aws-snsclient": "^0.2.0",
     "body-parser": "^1.15.0",
-    "compression": "^1.0.3",
-    "cors": "^2.5.2",
+    "elasticsearch": "^11.0.1",
     "express": "^4.13.4",
     "fs": "0.0.2",
-    "helmet": "^1.3.0",
     "http": "0.0.0",
-    "loopback": "^2.22.0",
-    "loopback-boot": "^2.6.5",
-    "loopback-component-explorer": "^2.4.0",
-    "loopback-connector-es": "^1.0.3",
-    "loopback-datasource-juggler": "^2.39.0",
-    "serve-favicon": "^2.0.1",
     "turf": "^2.0.2",
     "twit": "^2.2.3"
-  },
-  "devDependencies": {
-    "jshint": "^2.5.6",
-    "nsp": "^2.1.0"
-  },
-  "repository": {
-    "type": "",
-    "url": ""
-  },
-  "license": "UNLICENSED",
-  "description": "twitter-api"
+  }
 }

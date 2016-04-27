@@ -1,4 +1,8 @@
 var AWS = require("aws-sdk");
+var AlchemyAPI = require('alchemy-api');
+var fs = require("fs");
+var Twit = require('twit');
+var turf = require('turf');
 
 /*
 AWS SQS
@@ -77,12 +81,11 @@ function publishTweet(tweet) {
 /*
 Sentiment Detection
 */
-var AlchemyAPI = require('alchemy-api');
 var alchemy = new AlchemyAPI(process.env.ALCHEMY_API_KEY);
 
 function addSentiment(tweet) {
     var promise = new Promise(function (resolve, reject) {
-        alchemy.sentiment('TEXT', tweet.properties.text, function (err, response) {
+        alchemy.sentiment('TEXT', tweet.text, function (err, response) {
             if (err) {
                 if (err) console.log(err);
                 reject(err);
@@ -90,7 +93,7 @@ function addSentiment(tweet) {
                 console.log(response);
             } else {
                 if (typeof response.docSentiment !== "undefined") {
-                    tweet.properties.sentiment = response.docSentiment.type;
+                    tweet.sentiment = response.docSentiment.type;
                     resolve(tweet);
                 }
             }
@@ -102,7 +105,6 @@ function addSentiment(tweet) {
 /*
 Read Manhattan GeoJson
 */
-var fs = require("fs");
 
 function readJsonFileSync(filepath, encoding) {
 
@@ -124,7 +126,6 @@ var manhattan = readJson('data/manhattan.geojson');
 /*
 Tweet stream
 */
-var Twit = require('twit');
 
 var T = new Twit({
     consumer_key: process.env.CONSUMER_KEY,
@@ -151,35 +152,40 @@ function validateTweet(tweet) {
 }
 
 function formatTweet(tweet) {
-    tweet.coordinates.properties = {
+    tweet = {
         "id": tweet.id,
         "text": tweet.text,
-        "time": tweet.timestamp_ms
+        "time": tweet.timestamp_ms,
+        "coordinates": tweet.coordinates
     }
     return tweet.coordinates;
 }
 
 // Validate that the point resides in Manhattan
-var turf = require('turf');
 function validateGeoInfo(tweet) {
+    var point;
     if (tweet.coordinates == null) {
         var box = tweet.place.bounding_box.coordinates[0]
         // generate a random point from bounding box
-        tweet.coordinates = turf.random('points', 1, {
+        point = turf.random('points', 1, {
             bbox: [box[0][0], box[0][1], box[2][0], box[2][1]]
         }).features[0];
     } else {
-        tweet.coordinates = {
-            "type": "Feature",
-            "geometry": tweet.coordinates
+        point = {
+            type: "Feature",
+            geometry: tweet.coordinates
         }
     }
-    var valid = manhattan.features.some(function (f) {
-        if (turf.inside(tweet.coordinates, f)) {
+    var valid = manhattan.features.some(function (box) {
+        if (turf.inside(point, box)) {
             return true;
         }
     })
-    return valid ? tweet : null;
+    if (valid) {
+        tweet.coordinates = point.geometry.coordinates;
+        return tweet;
+    }
+    else return null;
 }
 
 
