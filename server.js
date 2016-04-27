@@ -48,8 +48,7 @@ var express = require('express')
   , SNSClient = require('aws-snsclient');
  
 var client = SNSClient(function(err, message) {
-    if (err) console.log(err);
-    else console.log(message);
+    console.log(message);
 });
  
 app.post('/api/tweets', client);
