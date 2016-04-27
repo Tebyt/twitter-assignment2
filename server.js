@@ -45,8 +45,10 @@
 
 var express = require('express')
   , app = express()
-  , SNSClient = require('aws-snsclient');
+  , SNSClient = require('aws-snsclient')
+  , bodyParser = require('body-parser');
  
+app.use(bodyParser.json());
 var client = SNSClient(function(err, message) {
     if (err) console.log(err);
     else console.log(message);
@@ -58,6 +60,13 @@ app.listen(app.get('port'), function () {
     console.log('Listening on port ' + app.get('port'))
 });
 
+
+app.post('/api/tweets', function(req, res) {
+    if (req.headers['x-amz-sns-message-type']) {
+        req.headers['content-type'] = 'application/json;charset=UTF-8';
+    }
+    next();
+})
 
 app.post('/api/tweets', function(req, res) {
     console.log(req.body);
