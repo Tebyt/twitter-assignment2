@@ -44,30 +44,30 @@
 
 
 var express = require('express')
-  , app = express()
-  , SNSClient = require('aws-snsclient')
-  , bodyParser = require('body-parser');
- 
-app.use(bodyParser.json());
-var client = SNSClient(function(err, message) {
+    , app = express()
+    , SNSClient = require('aws-snsclient')
+    , bodyParser = require('body-parser');
+
+var client = SNSClient(function (err, message) {
     if (err) console.log(err);
     else console.log(message);
 });
- 
+
 // app.post('/api/tweets', client);
 app.set('port', process.env.PORT || 3000);
 app.listen(app.get('port'), function () {
     console.log('Listening on port ' + app.get('port'))
 });
 
-
-app.post('/api/tweets', function(req, res, next) {
+var overrideContentType = function (req, res, next) {
     if (req.headers['x-amz-sns-message-type']) {
         req.headers['content-type'] = 'application/json;charset=UTF-8';
     }
     next();
-})
+};
+app.use(overrideContentType);
+app.use(bodyParser.json());
 
-app.post('/api/tweets', function(req, res) {
+app.post('/api/tweets', function (req, res) {
     console.log(req.body);
 })
