@@ -8,6 +8,7 @@ var client = new elasticsearch.Client({
     // host: '127.0.0.1:9200',
     log: ['error', 'warning']
 });
+createIndexIfNotExist();
 
 function deleteAndCreateIndex() {
     deleteIndex().then(createIndex);
@@ -214,5 +215,3 @@ module.exports = {
     searchByCoordinates: searchByCoordinates
 }
 
-
-createIndexIfNotExist();
