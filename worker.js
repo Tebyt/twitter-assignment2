@@ -16,6 +16,7 @@ function sendToQueue(tweet) {
         MessageBody: JSON.stringify(tweet),
         QueueUrl: queueURL
     }
+    // console.log(tweet);
     sqs.sendMessage(params, function (err, data) {
         console.log("Sending to SQS");
         if (err) console.error(err, err.stack);
@@ -35,6 +36,7 @@ function retriveFromQueue() {
             if (typeof message.Messages != 'undefined') {
                 message.Messages.forEach(function (message) {
                     var tweet = JSON.parse(message.Body);
+                    // console.log(tweet);
                     // console.log(message.MessageId);
                     addSentiment(tweet).then(function (tweet) {
                         publishTweet(tweet);
@@ -71,6 +73,7 @@ function publishTweet(tweet) {
         Message: JSON.stringify(tweet),
         TopicArn: topicURL
     };
+    console.log(params);
     sns.publish(params, function (err, data) {
         if (err) console.error(err, err.stack);
         console.log("Published to SNS");
@@ -153,12 +156,12 @@ function validateTweet(tweet) {
 
 function formatTweet(tweet) {
     tweet = {
-        "id": tweet.id,
+        "id": tweet.id_str,
         "text": tweet.text,
         "time": tweet.timestamp_ms,
         "coordinates": tweet.coordinates
     }
-    return tweet.coordinates;
+    return tweet;
 }
 
 // Validate that the point resides in Manhattan

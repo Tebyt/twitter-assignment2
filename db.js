@@ -128,11 +128,11 @@ function initSetting() {
     })
 }
 
-function addTweet(document, id) {
+function addTweet(document) {
     return client.index({
         index: index_name,
         type: type_name,
-        id: id,
+        id: document.id,
         body: document
     });
 }
@@ -200,6 +200,7 @@ function getAllTweets() {
     }).then(function (data) {
         data = data.hits.hits;
         data = data.map(function (d) {
+            console.log(d);
             return d._source
         })
         return data;
