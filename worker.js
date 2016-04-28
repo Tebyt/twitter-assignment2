@@ -74,10 +74,10 @@ function publishTweet(tweet) {
         Message: JSON.stringify(tweet),
         TopicArn: topicURL
     };
-    // sns.publish(params, function (err, data) {
-    //     if (err) console.error(err, err.stack);
+    sns.publish(params, function (err, data) {
+        if (err) console.error(err, err.stack);
         console.log("Published to SNS");
-    // });
+    });
 }
 
 
