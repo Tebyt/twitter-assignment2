@@ -3,7 +3,6 @@ var AlchemyAPI = require('alchemy-api');
 var fs = require("fs");
 var Twit = require('twit');
 var turf = require('turf');
-var io = require('./server');
 
 
 /*
@@ -75,12 +74,10 @@ function publishTweet(tweet) {
         Message: JSON.stringify(tweet),
         TopicArn: topicURL
     };
-    console.log(params);
-    sns.publish(params, function (err, data) {
-        if (err) console.error(err, err.stack);
+    // sns.publish(params, function (err, data) {
+    //     if (err) console.error(err, err.stack);
         console.log("Published to SNS");
-        io.emit("tweet", tweet);
-    });
+    // });
 }
 
 

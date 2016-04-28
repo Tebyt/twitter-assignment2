@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db.js');
 var bodyParser = require("body-parser");
-
+var io;
 
 // For solving AWS problem
 var overrideContentType = function (req, res, next) {
@@ -25,6 +25,7 @@ var extractMessage = function (req, res, next) {
 }
 router.post('/', extractMessage)
 router.post('/', function (req, res) {
+    io.emit("tweet", req.body);
     db.addTweet(req.body)
         .then(function (resp) {
             res.json(resp)
@@ -83,4 +84,7 @@ router.get('/sentiment/:toSearch', function (req, res) {
 //         res.json("[]");
 //     });
 // })
-module.exports = router;
+module.exports = function(socket) {
+    io = socket;
+    return router;
+}

@@ -69,7 +69,7 @@ function registerMarker(name, color) {
 function registerSocket() {
     socket = io.connect();
     socket.on('tweet', function (tweet) {
-        // console.log(data);
+        console.log(tweet);
         var point = formatPoint(tweet);
         showPoint(point);
         d3.select("#tweet").text(tweet.text);
