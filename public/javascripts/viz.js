@@ -10,6 +10,8 @@ var map = new mapboxgl.Map({
     zoom: 10.7
 
 });
+
+//var host = "http://twitter-assignment2.herokuapp.com"
 var host = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 
 d3.select("#refresh").on("click", function () {
@@ -76,7 +78,7 @@ function refreshData(marker) {
 
 function fetchAllPoints() {
     console.log("fetching data");
-    d3.json("/api/tweets", function (points) {
+    d3.json(host+"/api/tweets", function (points) {
         console.log("fetched");
         // console.log(points);
         points = formatPoints(points);
@@ -94,7 +96,7 @@ function showAllPoints() {
 
 function fetchPointsByText(key, callback) {
     console.log("fetching data");
-    d3.json("/api/tweets/text/" + key + "?source=text,coordinates,sentiment", function (data) {
+    d3.json(host+"/api/tweets/text/" + key + "?source=text,coordinates,sentiment", function (data) {
         callback(filterUnqualified(data, key));
     });
 }
@@ -143,7 +145,7 @@ function filterUnqualifiedForTweet(data, key) {
     })
 }
 function showAutocomplete(key) {
-    d3.json('/api/tweets/text/' + key +'?source=text,sentiment', function (tweets) {
+    d3.json(host+'/api/tweets/text/' + key +'?source=text,sentiment', function (tweets) {
         console.log(tweets);
         tweets = filterUnqualifiedForTweet(tweets, key);
         // if (tweets.length > 0) {
