@@ -17,18 +17,6 @@ d3.select("#refresh").on("click", function () {
     hideTweets();
     d3.select("#search").property('value', "");
 })
-map.on('click', function (data) {
-    data = data.lngLat;
-    var url = '/api/coordinates/' + data.lat + '/' + data.lng;
-    console.log(url);
-
-    d3.json(url, function (data) {
-        // console.log(data);
-        showFull(data);
-    });
-    //   var e = data && data.originalEvent;
-    //   console.log('got click ' + (e ? 'button = ' + e.button : ''));
-});
 
 map.on('style.load', function () {
     init();
@@ -69,7 +57,8 @@ function registerMarker(name, color) {
 function registerSocket() {
     socket = io.connect();
     socket.on('tweet', function (tweet) {
-        var point = formatPoint(JSON.parse(tweet));
+        tweet = JSON.parse(tweet)
+        var point = formatPoint(tweet);
         showPoint(point);
         d3.select("#tweet").text(tweet.text);
     });
@@ -193,28 +182,6 @@ function showTweets(tweets) {
     div.enter().append("li").html(function (d) { return d.text });
     div.exit().remove();
 }
-// function showTweets(data, key) {
-//     data.forEach(function (d) {
-//         showTweet(d.properties, key, "#tweets");
-//     })
-
-// }
-// function showTweet(tweet, key, div) {
-//     var text = $('<span class="tweet">').text(tweet.text);
-//     var str = text.text().replace(key, '<h3>$1</h3>');
-//     text.html(str);
-//     var t = $('<li>');
-//     //   t.append($('<img>').attr('src', data.img));
-//     t.append(text);
-//     //   t.append($('<a class="time">')
-//     //    .attr('href', 'https://twitter.com/' + data.user + '/status/' + data.id)
-//     //    .attr('target', '_blank')
-//     //    .data('time', data.at)
-//     //    .text(pretty(data.at) || 'now')
-//     //   );
-//     $(div).append(t);
-// }
-
 
 // For point animation
 var animation = [[1, 1], [3, 1], [20, 0.5], [200, 0]];
@@ -249,6 +216,8 @@ function animatePoint(id) {
     }
 }
 
+
+// format point to feed MapBox
 function formatPoints(points) {
     points = points.map(function (p) {
         return formatPoint(p);
