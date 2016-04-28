@@ -12,9 +12,10 @@ The elasticsearch database is provided by [Searchly](http://www.searchly.com)
 
 **GET /** Get all the tweets
 
-**GET /text/:toSearch?fields=text,time,sentiment,coordinates** Get tweets by text (fields could contain 1-4 elements)
+**GET /text/:toSearch?fields=text,time,sentiment,coordinates** Get tweets by text (fields could contain 1-4 elements seperated by ',')
 
-**GET /sentiment/:toSearch?fields=text,time,sentiment,coordinates** Get tweets by text (fields could contain 1-4 elements)
+
+**GET /sentiment/:toSearch?fields=text,time,sentiment,coordinates** Get tweets by sentiment (fields could contain 1-4 elements seperated by ',')
 
 
 
