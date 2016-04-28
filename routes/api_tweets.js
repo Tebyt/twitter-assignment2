@@ -11,20 +11,19 @@ var overrideContentType = function (req, res, next) {
     }
     next();
 };
+
+router.post('/', overrideContentType);
+router.use(bodyParser.json());
+
+// Main
+
 var extractMessage = function (req, res, next) {
     if (req.headers['x-amz-sns-message-type']) {
         req.body = req.body.Message;
     }
-    console.log(req.body);
     next();
 }
-router.post('/', overrideContentType);
-router.use(bodyParser.json());
 router.post('/', extractMessage)
-
-// Main
-
-
 router.post('/', function (req, res) {
     db.addTweet(req.body)
         .then(function (resp) {
@@ -32,44 +31,56 @@ router.post('/', function (req, res) {
         });
 })
 router.get('/', function (req, res) {
-    db.getAllTweets().then(function (data) {
-        res.json(data);
-    }, function (err) {
-        console.trace(err.message);
-        res.json("[]");
-    });
-});
+    db.getAllPoints()
+        .then(function (data) {
+            res.json(data)
+        })
+        .catch(function (err) {
+            res.status(500).json(err)
+        })
+})
+// router.get('/', function (req, res) {
+//     db.getAllTweets().then(function (data) {
+//         res.json(data);
+//     }, function (err) {
+//         res.status(500).json(err)
+//     });
+// });
 router.delete('/', function (req, res) {
     db.deleteAndCreateIndex().then(function (resp) {
         res.send(resp)
     });
 })
 router.get('/text/:toSearch', function (req, res) {
-    db.searchByText(req.params.toSearch).then(function (data) {
+    var source = req.query.source.split(',')
+    db.searchByText(req.params.toSearch, source).then(function (data) {
         res.json(data);
     }, function (err) {
-        console.trace(err.message);
-        res.json("[]");
+        res.status(500).json(err)
     });
 });
-router.get('/coordinates/:lat/:lon', function (req, res) {
-    db.searchByCoordinates(req.params).then(function (data) {
+router.get('/sentiment/:toSearch', function (req, res) {
+    var source = req.query.source.split(',')
+    db.searchBySentiment(req.params.toSearch, source).then(function (data) {
         res.json(data);
     }, function (err) {
-        console.trace(err.message);
-        res.json("[]");
+        res.status(500).json(err)
     });
 })
-router.get('/text/autocomplete/:toSearch', function (req, res) {
-    // console.log(req.params.toSearch);
-    db.searchByText(req.params.toSearch).then(function (data) {
-        data = data.map(function (d) {
-            return d.properties.text;
-        })
-        res.json(data);
-    }, function (err) {
-        console.trace(err.message);
-        res.json("[]");
-    });
-})
+// router.get('/coordinates/:lat/:lon', function (req, res) {
+//     db.searchByCoordinates(req.params).then(function (data) {
+//         res.json(data);
+//     }, function (err) {
+//         res.status(500).json(err)
+//     });
+// })
+// router.get('/text/autocomplete/:toSearch', function (req, res) {
+//     // console.log(req.params.toSearch);
+//     db.searchByText(req.params.toSearch).then(function (data) {
+//         res.json(data);
+//     }, function (err) {
+//         console.trace(err.message);
+//         res.json("[]");
+//     });
+// })
 module.exports = router;

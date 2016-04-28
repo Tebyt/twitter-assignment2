@@ -3,6 +3,8 @@ var AlchemyAPI = require('alchemy-api');
 var fs = require("fs");
 var Twit = require('twit');
 var turf = require('turf');
+var io = require('./server');
+
 
 /*
 AWS SQS
@@ -77,6 +79,7 @@ function publishTweet(tweet) {
     sns.publish(params, function (err, data) {
         if (err) console.error(err, err.stack);
         console.log("Published to SNS");
+        io.emit("tweet", tweet);
     });
 }
 
@@ -190,6 +193,5 @@ function validateGeoInfo(tweet) {
     }
     else return null;
 }
-
 
 

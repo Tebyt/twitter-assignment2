@@ -55,7 +55,10 @@ function createIndex() {
         .then(closeIndex)
         .then(initSetting)
         .then(openIndex)
-        .then(initMapping);
+        .then(initMapping)
+        .catch(function (err) {
+            console.trace(err);
+        });
 }
 function initMapping() {
     console.log("init mapping");
@@ -137,17 +140,18 @@ function addTweet(document) {
     });
 }
 
-function searchByText(text) {
+function searchByText(text, source) {
     return client.search({
         index: index_name,
         type: type_name,
         body: {
             query: {
                 "match": {
-                    "properties.text": text
+                    "text": text
                 }
             },
-            size: 2000
+            _source: typeof source == "undefined"? ["text", "coordinates"] : source,
+            size: 100
         }
     }).then(function (data) {
         data = data.hits.hits;
@@ -158,25 +162,19 @@ function searchByText(text) {
     })
 }
 
-function searchByCoordinates(coordinates, diameter) {
+function searchBySentiment(sentiment, source) {
+    console.log(source);
     return client.search({
         index: index_name,
         type: type_name,
         body: {
-            "query": {
-                "bool": {
-                    "must": {
-                        "match_all": {}
-                    },
-                    "filter": {
-                        "geo_distance": {
-                            "distance": "1km",
-                            "geometry.coordinates": coordinates
-                        }
-                    }
+            query: {
+                "match": {
+                    "sentiment": sentiment
                 }
             },
-            "size": 100
+            _source: typeof source == "undefined"? ["text", "coordinates"] : source,
+            size: 100
         }
     }).then(function (data) {
         data = data.hits.hits;
@@ -187,11 +185,62 @@ function searchByCoordinates(coordinates, diameter) {
     })
 }
 
-function getAllTweets() {
+
+// function searchByCoordinates(coordinates, diameter) {
+//     return client.search({
+//         index: index_name,
+//         type: type_name,
+//         body: {
+//             "query": {
+//                 "bool": {
+//                     "must": {
+//                         "match_all": {}
+//                     },
+//                     "filter": {
+//                         "geo_distance": {
+//                             "distance": "1km",
+//                             "coordinates": coordinates
+//                         }
+//                     }
+//                 }
+//             },
+//             "size": 100
+//         }
+//     }).then(function (data) {
+//         data = data.hits.hits;
+//         data = data.map(function (d) {
+//             return d._source
+//         })
+//         return data;
+//     })
+// }
+
+// function getAllTweets() {
+//     return client.search({
+//         index: index_name,
+//         type: type_name,
+//         body: {
+//             query: {
+//                 "match_all": {}
+//             },
+//             size: 2000
+//         }
+//     }).then(function (data) {
+//         data = data.hits.hits;
+//         data = data.map(function (d) {
+//             console.log(d);
+//             return d._source
+//         })
+//         return data;
+//     })
+// }
+
+function getAllPoints() {
     return client.search({
         index: index_name,
         type: type_name,
         body: {
+            "_source": ["sentiment", "coordinates"],
             query: {
                 "match_all": {}
             },
@@ -200,7 +249,6 @@ function getAllTweets() {
     }).then(function (data) {
         data = data.hits.hits;
         data = data.map(function (d) {
-            console.log(d);
             return d._source
         })
         return data;
@@ -211,8 +259,10 @@ module.exports = {
     createIndexIfNotExist: createIndexIfNotExist,
     addTweet: addTweet,
     searchByText: searchByText,
-    getAllTweets: getAllTweets,
+    // getAllTweets: getAllTweets,
     deleteAndCreateIndex: deleteAndCreateIndex,
-    searchByCoordinates: searchByCoordinates
+    // searchByCoordinates: searchByCoordinates,
+    getAllPoints: getAllPoints,
+    searchBySentiment: searchBySentiment
 }
 
