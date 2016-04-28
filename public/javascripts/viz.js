@@ -70,7 +70,7 @@ function registerSocket() {
     socket = io.connect();
     socket.on('tweet', function (tweet) {
         console.log(tweet);
-        var point = formatPoint(tweet);
+        var point = formatPoint(JSON.parse(tweet));
         console.log(point);
         showPoint(point);
         d3.select("#tweet").text(tweet.text);
