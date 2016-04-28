@@ -26,7 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function (socket) {
     console.log("socket.io connected");
-    socket.emit("tweet", "socket.io connected");
 });
 
 var index = require('./routes/index');
