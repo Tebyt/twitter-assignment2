@@ -88,15 +88,18 @@ var alchemy = new AlchemyAPI(process.env.ALCHEMY_API_KEY);
 
 function addSentiment(tweet) {
     var promise = new Promise(function (resolve, reject) {
-        alchemy.sentiment('TEXT', tweet.text, function (err, response) {
+        alchemy.sentiment(tweet.text, 'TEXT', function (err, response) {
             if (err) {
                 if (err) console.log(err);
                 reject(err);
             } else if (response.status === 'ERROR') {
                 console.log(response);
+            } else if (response.language !== "english") {
+                console.log("Not English");  
             } else {
-                if (typeof response.docSentiment !== "undefined") {
+                if (typeof response.docSentiment !== "undefined" && response.language == "english") {
                     tweet.sentiment = response.docSentiment.type;
+                    // console.log(tweet.text)
                     resolve(tweet);
                 }
             }
