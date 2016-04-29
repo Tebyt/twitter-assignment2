@@ -1,7 +1,7 @@
 //var host = "http://twitter-assignment2.herokuapp.com"
 var host = "";
 
-var marker_temp = extractPoints([]);  // Records data for real-time tweets
+var tweets_temp = [];  // Records data for real-time tweets
 var map;
 
 init();
@@ -144,13 +144,13 @@ function showTexts(tweets) {
 
 // For point animation
 var animation = [[1, 1], [3, 1], [20, 0.5], [200, 0]];
-var point_id = 0;
+var point_count = 0;
 
 function showPoint(tweet) {
-    marker_temp.features.push(extractPoint(tweet));
-    ChangeLayerData("marker_temp", marker_temp);
-    var cur_point = "marker_point" + id;
-    ++id;
+    tweets_temp.push(tweet);
+    ChangeLayerData("marker_temp", tweets_temp);
+    var cur_point = "marker_point" + point_count;
+    ++point_count;
     registerMarker(cur_point, "lightblue");
     ChangeLayerData(cur_point, [tweet]);
     animatePoint(cur_point, Date.now());
@@ -162,7 +162,7 @@ function animatePoint(id, start_time) {
         map.setPaintProperty(id, "circle-radius", animation[cur_frame][0]);
         map.setPaintProperty(id, "circle-opacity", animation[cur_frame][1]);
         requestAnimationFrame(function () {
-            animatePoint(id), start_time;
+            animatePoint(id, start_time);
         });
     } else {
         map.removeSource(id);
