@@ -9,9 +9,10 @@ init();
 function init() {
     $(document).foundation();
     initMap();
+    initSocket();
     d3.select("#refresh").on("click", function () {
         showAllPoints();
-        hideTexts();
+        hideSearchResult();
         d3.select("#search").property('value', "");
     })
     d3.select("#search").on("keyup", function () {
@@ -45,19 +46,18 @@ function initMap() {
 
     });
     map.on('style.load', function () {
-        registerMarkers();
-        registerSocket();
+        registerLayers();
         showAllPoints();
     });
 
 }
 
-function registerMarkers() {
-    registerMarker("marker_all", "yellow");
-    registerMarker("marker_temp", "lightblue");
+function registerLayers() {
+    registerLayer("marker_all", "yellow");
+    registerLayer("marker_temp", "lightblue");
 }
 
-function registerMarker(name, color) {
+function registerLayer(name, color) {
     map.addSource(name, {
         "type": "geojson",
         "data": extractPoints([])
@@ -74,7 +74,7 @@ function registerMarker(name, color) {
         }
     });
 }
-function registerSocket() {
+function initSocket() {
     socket = io.connect();
     socket.on('tweet', function (tweet) {
         tweet = JSON.parse(tweet)
@@ -94,7 +94,7 @@ function showAllPoints() {
 function showFilteredTweets(key) {
     d3.json(host + "/api/tweets/text/" + key + "?source=text,coordinates,sentiment", function (tweets) {
         tweets = filterUnqualifiedTweets(tweets, key);
-        showTexts(tweets);
+        showSearchResult(tweets);
         showPoints(tweets);
     });
 }
@@ -105,13 +105,13 @@ function showPoints(tweets) {
 function showAutocomplete(key) {
     d3.json(host + '/api/tweets/text/' + key + '?source=text,sentiment', function (tweets) {
         tweets = filterUnqualifiedTweets(tweets, key);
-        tweets = tweets.map(function (d) {
-            var index = d.text.indexOf(key)
-            d.text = d.text.substring(index, index + 20);
-            d.text = d.text.replace(new RegExp(key, 'i'), '<u><b>$&</b></u>');
-            return d;
+        tweets = tweets.map(function (tweet) {
+            var index = tweet.text.indexOf(key)
+            tweet.text = tweet.text.substring(index, index + 20);
+            tweet.text = tweet.text.replace(new RegExp(key, 'i'), '<u><b>$&</b></u>');
+            return tweet;
         })
-        showTexts(tweets);
+        showSearchResult(tweets);
     })
 }
 function hideLayer(layer) {
@@ -131,12 +131,12 @@ function filterUnqualifiedTweets(tweets, key) {
     })
 }
 
-function hideTexts() {
+function hideSearchResult() {
     d3.select("#tweets").html("");
 }
 
-function showTexts(tweets) {
-    hideTexts()
+function showSearchResult(tweets) {
+    hideSearchResult()
     var div = d3.select("#tweets").selectAll("li").data(tweets);
     div.enter().append("li").html(function (d) { return d.text });
     div.exit().remove();
@@ -151,7 +151,7 @@ function showPoint(tweet) {
     ChangeLayerData("marker_temp", tweets_temp);
     var cur_point = "marker_point" + point_count;
     ++point_count;
-    registerMarker(cur_point, "lightblue");
+    registerLayer(cur_point, "lightblue");
     ChangeLayerData(cur_point, [tweet]);
     animatePoint(cur_point, Date.now());
 }
