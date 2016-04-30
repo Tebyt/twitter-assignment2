@@ -68,14 +68,14 @@ function registerLayer(name) {
         "type": "symbol",
         "source": name,
         "layout": {
-                    //"icon-image": "",
-                    "icon-allow-overlap": true,
-                    "text-field":"{sentiment}",
-                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-                    "text-size": 9,
-                    "text-transform": "uppercase",
-                    "text-letter-spacing": 0.05,
-                    "text-offset": [0, 1.5]
+            //"icon-image": "",
+            "icon-allow-overlap": true,
+            "text-field": "{sentiment}",
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-size": 9,
+            "text-transform": "uppercase",
+            "text-letter-spacing": 0.05,
+            "text-offset": [0, 1.5]
         },
         "paint": {
             "text-color": "#202",
@@ -128,6 +128,7 @@ function showFilteredTweets(key) {
 }
 function showPoints(tweets) {
     hideLayer("marker_temp");
+    tweets_temp = [];
     ChangeLayerData("marker_all", tweets);
 }
 function showAutocomplete(key) {
