@@ -1,5 +1,5 @@
-var host = "http://twitter-assignment2.herokuapp.com"
-//var host = "";
+// var host = "http://twitter-assignment2.herokuapp.com"
+var host = "";
 
 var tweets_temp = [];  // Records data for real-time tweets
 var map;
@@ -30,19 +30,19 @@ function init() {
 
         }
     })
-//    d3.select("#select").on("click",function(e) {
-//        var a = d3.select("#select").value;
-//        if (a == "0") {
-//            showAllPoints();
-//        }
-//    })
-    $( "select" )
-  .change(function () {
-        var str = $( "select option:selected" ).text();
-        showFilteredTweets(str);
-    });
-        
-    
+    //    d3.select("#select").on("click",function(e) {
+    //        var a = d3.select("#select").value;
+    //        if (a == "0") {
+    //            showAllPoints();
+    //        }
+    //    })
+    $("select")
+        .change(function () {
+            var str = $("select option:selected").text();
+            showFilteredTweets(str);
+        });
+
+
 }
 
 
@@ -67,6 +67,9 @@ function initMap() {
 
 function registerLayers() {
     registerLayer("marker_all", "yellow");
+    registerLayer("neutral", "#202");
+    registerLayer("positive", "pink");
+    registerLayer("negative", "blue");
     registerLayer("marker_temp", "lightblue");
 }
 
@@ -80,26 +83,21 @@ function registerLayer(name, color) {
         // "interactive": true,
         "type": "symbol",
         "source": name,
-//        "paint": {
-//            "circle-color": color,
-//            "circle-radius": 1,
-//            "circle-opacity": 1
-//        }
         "layout": {
-                    //"icon-image": "",
-                    "icon-allow-overlap": true,
-                    "text-field":"{sentiment}",
-                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-                    "text-size": 9,
-                    "text-transform": "uppercase",
-                    "text-letter-spacing": 0.05,
-                    "text-offset": [0, 1.5]
-                },
-                "paint": {
-                    "text-color": "#202",
-                    "text-halo-color": "#fff",
-                    "text-halo-width": 2
-                }
+            //"icon-image": "",
+            "icon-allow-overlap": true,
+            "text-field": "{sentiment}",
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-size": 9,
+            "text-transform": "uppercase",
+            "text-letter-spacing": 0.05,
+            "text-offset": [0, 1.5]
+        },
+        "paint": {
+            "text-color": color,
+            "text-halo-color": "#fff",
+            "text-halo-width": 2
+        }
     });
 }
 function initSocket() {
@@ -115,7 +113,9 @@ function initSocket() {
 
 function showAllPoints() {
     d3.json(host + "/api/tweets", function (tweets) {
-        showPoints(tweets);
+        // tweets = splitTweetsBySentiment(tweets);
+        showPoints(tweets, "neutral");
+        
     })
 }
 
@@ -126,9 +126,9 @@ function showFilteredTweets(key) {
         showPoints(tweets);
     });
 }
-function showPoints(tweets) {
+function showPoints(tweets, layer) {
     hideLayer("marker_temp");
-    ChangeLayerData("marker_all", tweets);
+    ChangeLayerData(layer, tweets);
 }
 function showAutocomplete(key) {
     d3.json(host + '/api/tweets/text/' + key + '?source=text,sentiment', function (tweets) {
@@ -146,7 +146,9 @@ function hideLayer(layer) {
     ChangeLayerData(layer, []);
 }
 function ChangeLayerData(layer, tweets) {
-    map.getSource(layer).setData(extractPoints(tweets));
+    console.log(layer);
+    var points = extractPoints(tweets);
+    map.getSource(layer).setData(points);
 }
 
 function filterUnqualifiedTweets(tweets, key) {
@@ -201,6 +203,7 @@ function animatePoint(id, start_time) {
 
 // Extract points from tweet to feed MapBox
 function extractPoints(tweets) {
+    console.log(tweets);
     var points = tweets.map(function (tweet) {
         return extractPoint(tweet);
     })
@@ -217,9 +220,20 @@ function extractPoint(tweet) {
         "geometry": {
             "type": "Point",
             "coordinates": tweet.coordinates
-        },
-        "properties": {
-            "sentiment": tweet.sentiment
         }
     }
+}
+
+function splitTweetsBySentiment(tweets) {
+    tweets = tweets.reduce(function(pre, cur) {
+        pre[cur.sentiment].push({
+            coordinates: cur.coordinates
+        });
+        return pre;
+    }, {
+        neutral: [],
+        positive: [],
+        negative: []
+    })
+    return tweets;
 }
