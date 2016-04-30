@@ -1,5 +1,5 @@
-//var host = "http://twitter-assignment2.herokuapp.com"
-var host = "";
+var host = "http://twitter-assignment2.herokuapp.com"
+//var host = "";
 
 var tweets_temp = [];  // Records data for real-time tweets
 var map;
@@ -30,8 +30,21 @@ function init() {
 
         }
     })
-
+//    d3.select("#select").on("click",function(e) {
+//        var a = d3.select("#select").value;
+//        if (a == "0") {
+//            showAllPoints();
+//        }
+//    })
+    $( "select" )
+  .change(function () {
+        var str = $( "select option:selected" ).text();
+        showFilteredTweets(str);
+    });
+        
+    
 }
+
 
 function initMap() {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGVieXQiLCJhIjoiY2lsZmd0c3I0MXI4dHZubWMzdXdodGp6MyJ9.yHg2aSIkgkJHYgwCVpPiwg';
@@ -65,13 +78,28 @@ function registerLayer(name, color) {
     map.addLayer({
         "id": name,
         // "interactive": true,
-        "type": "circle",
+        "type": "symbol",
         "source": name,
-        "paint": {
-            "circle-color": color,
-            "circle-radius": 1,
-            "circle-opacity": 1
-        }
+//        "paint": {
+//            "circle-color": color,
+//            "circle-radius": 1,
+//            "circle-opacity": 1
+//        }
+        "layout": {
+                    //"icon-image": "",
+                    "icon-allow-overlap": true,
+                    "text-field":"{sentiment}",
+                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+                    "text-size": 9,
+                    "text-transform": "uppercase",
+                    "text-letter-spacing": 0.05,
+                    "text-offset": [0, 1.5]
+                },
+                "paint": {
+                    "text-color": "#202",
+                    "text-halo-color": "#fff",
+                    "text-halo-width": 2
+                }
     });
 }
 function initSocket() {
