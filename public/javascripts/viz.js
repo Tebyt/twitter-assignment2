@@ -53,11 +53,38 @@ function initMap() {
 }
 
 function registerLayers() {
-    registerLayer("marker_all", "yellow");
-    registerLayer("marker_temp", "lightblue");
+    registerLayer("marker_all");
+    registerTempLayer("marker_temp", "lightblue");
 }
 
-function registerLayer(name, color) {
+function registerLayer(name) {
+    map.addSource(name, {
+        "type": "geojson",
+        "data": extractPoints([])
+    });
+    map.addLayer({
+        "id": name,
+        // "interactive": true,
+        "type": "symbol",
+        "source": name,
+        "layout": {
+                    //"icon-image": "",
+                    "icon-allow-overlap": true,
+                    "text-field":"{sentiment}",
+                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+                    "text-size": 9,
+                    "text-transform": "uppercase",
+                    "text-letter-spacing": 0.05,
+                    "text-offset": [0, 1.5]
+        },
+        "paint": {
+            "text-color": "#202",
+            "text-halo-color": "#fff",
+            "text-halo-width": 2
+        }
+    });
+}
+function registerTempLayer(name, color) {
     map.addSource(name, {
         "type": "geojson",
         "data": extractPoints([])
@@ -74,6 +101,7 @@ function registerLayer(name, color) {
         }
     });
 }
+
 function initSocket() {
     socket = io.connect();
     socket.on('tweet', function (tweet) {
