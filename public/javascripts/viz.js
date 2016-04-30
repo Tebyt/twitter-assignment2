@@ -179,7 +179,7 @@ function showPoint(tweet) {
     ChangeLayerData("marker_temp", tweets_temp);
     var cur_point = "marker_point" + point_count;
     ++point_count;
-    registerLayer(cur_point, "lightblue");
+    registerTempLayer(cur_point, "lightblue");
     ChangeLayerData(cur_point, [tweet]);
     animatePoint(cur_point, Date.now());
 }
